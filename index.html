@@ -5,167 +5,285 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#090d18">
-<title>RealToon AI — Character Studio</title>
+<title>RealToon AI — Story Studio</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#090d18;color:#f4f5ff;font-family:Arial,sans-serif}
-header{padding:18px;border-bottom:1px solid #283047;display:flex;justify-content:space-between;align-items:center;gap:10px}
+header{padding:17px;border-bottom:1px solid #303953;display:flex;justify-content:space-between;align-items:center;gap:10px}
 .logo{font-size:22px;font-weight:bold;color:#ac9bff}
-main{max-width:800px;margin:auto;padding:22px 16px 45px}
-h1{font-size:34px;line-height:1.15;margin-bottom:12px}
-h2{font-size:21px}
+main{max-width:850px;margin:auto;padding:22px 14px 40px}
+h1{font-size:36px;line-height:1.15}
+h2{font-size:20px}
 p{color:#b9c1d5;line-height:1.6}
-.panel{background:#121a2b;border:1px solid #303953;border-radius:17px;padding:18px;margin-top:18px}
-label{display:block;margin:16px 0 8px;font-size:14px;color:#e1e4f4}
-input,select,textarea{width:100%;padding:13px;border-radius:10px;border:1px solid #39435d;background:#0b1120;color:white;font-size:16px}
-textarea{min-height:90px;resize:vertical}
-button{padding:13px;border:0;border-radius:10px;background:#8170ff;color:white;font-size:15px;font-weight:bold;cursor:pointer}
-.primary{width:100%;margin-top:18px}
-.secondary{background:#26314a;margin-top:10px;width:100%}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.result{display:none;margin-top:18px}
-#prompt{min-height:190px}
+.panel{background:#121a2b;border:1px solid #303953;border-radius:17px;padding:17px;margin-top:18px}
 .tag{display:inline-block;border:1px solid #454064;border-radius:30px;padding:7px 10px;color:#c8bdff;font-size:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mode{background:#0b1120;color:white;border:1px solid #39435d;border-radius:12px;padding:15px;text-align:left}
+.mode.active{border:2px solid #ac9bff;background:#211d3d}
+.mode b{display:block;margin-bottom:7px}
+label{display:block;margin:16px 0 8px;font-size:14px}
+input,select,textarea{width:100%;padding:13px;border-radius:10px;border:1px solid #39435d;background:#0b1120;color:white;font-size:16px;font-family:inherit}
+textarea{min-height:135px;resize:vertical;line-height:1.5}
+button{cursor:pointer;padding:13px;border:0;border-radius:10px;background:#8170ff;color:white;font-size:15px;font-weight:bold}
+.primary{width:100%;margin-top:17px}
+.secondary{width:100%;margin-top:10px;background:#26314a}
+.hint{font-size:12px;color:#98a4bd}
+.hidden{display:none!important}
+#preview{max-width:100%;max-height:270px;margin-top:12px;border-radius:12px}
+#result{display:none}
+#output{min-height:330px}
+.notice{background:#211d34;border:1px solid #554b7a;border-radius:10px;padding:12px;font-size:13px;line-height:1.5;color:#ddd5ff}
 footer{text-align:center;padding:20px;color:#8993ac;font-size:13px}
-@media(max-width:480px){.grid{grid-template-columns:1fr}h1{font-size:30px}main{padding:18px 12px}}
+@media(max-width:500px){.grid,.modes{grid-template-columns:1fr}h1{font-size:30px}main{padding:18px 12px}}
 </style>
 </head>
 <body>
 <header>
   <div class="logo">✦ RealToon AI</div>
-  <span class="tag">Character Studio</span>
+  <span class="tag">STORY STUDIO</span>
 </header>
+
 <main>
-  <span class="tag">CREATE YOUR OWN CHARACTERS</span>
-  <h1>Bring your characters to <span style="color:#ac9bff">life.</span></h1>
-  <p>Design people, animals, vegetables and fantasy characters for your stories. Customize their role, appearance and visual style.</p>
+  <span class="tag">YOUR STORY, YOUR WORLD</span>
+  <h1>Turn your ideas into <span style="color:#ac9bff">cinematic stories.</span></h1>
+  <p>Vegetables, humans, children, animals, horror, fantasy or comedy — write any story in your own language. No separate character forms required.</p>
 
   <section class="panel">
-    <h2>01 — Character details</h2>
-    <label for="name">Character name</label>
-    <input id="name" placeholder="Example: Brave Aloo">
-
-    <div class="grid">
-      <div>
-        <label for="type">Character type</label>
-        <select id="type">
-          <option>Vegetable</option>
-          <option>Human</option>
-          <option>Animal</option>
-          <option>Fantasy creature</option>
-          <option>Robot</option>
-          <option>Custom character</option>
-        </select>
-      </div>
-      <div>
-        <label for="age">Age / life stage</label>
-        <select id="age">
-          <option>Child / young</option>
-          <option>Teenager</option>
-          <option>Adult</option>
-          <option>Elderly</option>
-          <option>Ageless / unknown</option>
-        </select>
-      </div>
+    <h2>01 — Choose your mode</h2>
+    <div class="modes">
+      <button class="mode active" id="textMode" onclick="setMode('text')">
+        <b>🎬 Text-to-Video</b>
+        Write your story or idea.
+      </button>
+      <button class="mode" id="imageMode" onclick="setMode('image')">
+        <b>🖼️ Image-to-Video</b>
+        Upload an image and describe movement.
+      </button>
     </div>
 
-    <label for="role">Role in the story</label>
-    <input id="role" placeholder="Example: brave village police officer">
+    <div id="imageArea" class="hidden">
+      <label for="image">Upload image</label>
+      <input id="image" type="file" accept="image/*" onchange="showImage(event)">
+      <img id="preview" class="hidden" alt="Uploaded image preview">
+      <label for="movement">What should happen in the image?</label>
+      <textarea id="movement" placeholder="Example: Aloo runs to the school gate, turns around and speaks sadly. Keep the same face, clothes and colors."></textarea>
+      <p class="hint">Image preview only — it is not sent to an AI service.</p>
+    </div>
 
-    <label for="look">Appearance and clothing</label>
-    <textarea id="look" placeholder="Example: green uniform, expressive brown eyes, small cap"></textarea>
+    <label for="story">02 — Your story</label>
+    <textarea id="story" placeholder="Apni kahani yahan likho... Roman Urdu, Urdu, English, Pashto ya kisi bhi topic par. Example: A poor Aloo family is caught in a storm, then brave Gajar arrives to help them..."></textarea>
+    <p class="hint">No language dropdown. The plan will ask the video tool to follow your story's language. Correct spoken dialogue requires a compatible voice service later.</p>
 
     <div class="grid">
       <div>
-        <label for="mood">Personality</label>
-        <select id="mood">
-          <option>Brave and kind</option>
-          <option>Funny and playful</option>
-          <option>Quiet and mysterious</option>
-          <option>Smart and curious</option>
-          <option>Shy but helpful</option>
-          <option>Custom personality</option>
+        <label for="scenes">Number of scenes</label>
+        <select id="scenes">
+          <option value="3">3 scenes</option>
+          <option value="4">4 scenes</option>
+          <option value="5" selected>5 scenes</option>
+          <option value="6">6 scenes</option>
+          <option value="8">8 scenes</option>
+        </select>
+      </div>
+      <div>
+        <label for="duration">Total duration</label>
+        <select id="duration">
+          <option value="15">15 seconds</option>
+          <option value="30" selected>30 seconds</option>
+          <option value="45">45 seconds</option>
+          <option value="60">60 seconds</option>
+          <option value="90">90 seconds</option>
+        </select>
+      </div>
+      <div>
+        <label for="ratio">Video format</label>
+        <select id="ratio">
+          <option value="9:16" selected>Vertical 9:16 — Shorts/TikTok</option>
+          <option value="16:9">Landscape 16:9 — YouTube</option>
+          <option value="1:1">Square 1:1</option>
         </select>
       </div>
       <div>
         <label for="style">Visual style</label>
         <select id="style">
-          <option>Realistic cinematic 3D</option>
-          <option>Stylized realistic 3D</option>
-          <option>Family-friendly animation</option>
-          <option>Fantasy cinematic 3D</option>
+          <option>Realistic cinematic 3D animation</option>
+          <option>Stylized realistic 3D animation</option>
+          <option>Family-friendly 3D animation</option>
+          <option>Dark cinematic horror, non-graphic</option>
+          <option>Anime-inspired animation</option>
+          <option>Live-action cinematic look</option>
+          <option>Infer style from the story</option>
         </select>
       </div>
     </div>
 
-    <label for="language">Dialogue language</label>
-    <select id="language">
-      <option>Natural Urdu</option>
-      <option>Roman Urdu input, natural Urdu speech</option>
-      <option>English</option>
-      <option>Pashto</option>
-    </select>
+    <label for="voices">Character voice instructions (optional)</label>
+    <textarea id="voices" style="min-height:85px" placeholder="Example: Aloo has a warm adult voice. Little Aloo has a youthful voice. Gajar sounds confident. Keep each character's voice consistent."></textarea>
+    <p class="hint">Voice directions only. This page does not generate audio yet.</p>
 
-    <button class="primary" onclick="makeCharacter()">Create Character Prompt ✨</button>
+    <label style="display:flex;gap:10px;align-items:flex-start;line-height:1.5">
+      <input id="consistent" type="checkbox" checked style="width:auto;margin-top:3px">
+      Keep characters consistent across scenes: same face, size, colors, clothes and identifying details.
+    </label>
+
+    <button class="primary" onclick="makePlan()">✨ Prepare My Story Plan</button>
+    <div class="notice" style="margin-top:14px">
+      Free planning mode: prepares scene prompts only. Real video animation, generated voices and account saving are not connected yet.
+    </div>
   </section>
 
-  <section class="panel result" id="result">
-    <h2>02 — Your character prompt</h2>
-    <p>Your customized prompt is ready to use with a compatible AI image or video service.</p>
-    <textarea id="prompt" readonly></textarea>
-    <button class="primary" onclick="copyPrompt()">Select / Copy Prompt</button>
-    <p id="status" aria-live="polite"></p>
-    <button class="secondary" onclick="resetForm()">Create Another Character</button>
+  <section class="panel" id="result">
+    <h2>03 — Your story plan</h2>
+    <p>Copy this plan into a compatible AI video tool.</p>
+    <textarea id="output" readonly></textarea>
+    <button class="primary" onclick="copyPlan()">Copy Story Plan</button>
+    <p id="status" class="hint" aria-live="polite"></p>
+    <button class="secondary" onclick="downloadPlan()">Download Plan (.txt)</button>
   </section>
 
   <section class="panel">
-    <h2>03 — Consistency settings</h2>
-    <p>Use the same character name, face, body proportions, clothing, colors and visual style in every scene to help keep the character consistent.</p>
-    <span class="tag">Reusable character description</span>
-    <span class="tag">Story-ready prompt</span>
-    <span class="tag">Mobile-friendly</span>
+    <h2>Made for your imagination</h2>
+    <p>Write any genre or character type naturally in your story. The planner will create scene instructions without asking you to fill out a separate character form.</p>
+    <span class="tag">Scene planning</span>
+    <span class="tag">Continuity prompts</span>
+    <span class="tag">Mobile friendly</span>
   </section>
-
-  <p style="font-size:13px">Current version: character prompt builder. AI image generation, video animation, voice generation and account saving are not connected yet.</p>
 </main>
-<footer>RealToon AI · Your imagination, your characters.</footer>
+
+<footer>RealToon AI · Your imagination, your stories.</footer>
 
 <script>
-function makeCharacter(){
-  const name=document.getElementById('name').value.trim()||'Original Character';
-  const type=document.getElementById('type').value;
-  const age=document.getElementById('age').value;
-  const role=document.getElementById('role').value.trim()||'a character in an original story';
-  const look=document.getElementById('look').value.trim()||'distinctive, detailed appearance suitable for the story';
-  const mood=document.getElementById('mood').value;
+let mode='text';
+let imageSelected=false;
+
+function setMode(next){
+  mode=next;
+  document.getElementById('textMode').classList.toggle('active',next==='text');
+  document.getElementById('imageMode').classList.toggle('active',next==='image');
+  document.getElementById('imageArea').classList.toggle('hidden',next!=='image');
+}
+
+function showImage(event){
+  const file=event.target.files[0];
+  const preview=document.getElementById('preview');
+  if(!file){imageSelected=false;preview.classList.add('hidden');return;}
+  if(!file.type.startsWith('image/')){
+    alert('Please select an image file.');
+    event.target.value='';
+    imageSelected=false;
+    return;
+  }
+  const reader=new FileReader();
+  reader.onload=()=>{
+    preview.src=reader.result;
+    preview.classList.remove('hidden');
+    imageSelected=true;
+  };
+  reader.readAsDataURL(file);
+}
+
+function makePlan(){
+  const story=document.getElementById('story').value.trim();
+  const movement=document.getElementById('movement').value.trim();
+
+  if(mode==='text'&&!story){
+    alert('Bhai, pehle apni story likho.');
+    document.getElementById('story').focus();
+    return;
+  }
+  if(mode==='image'&&!imageSelected){
+    alert('Bhai, pehle image upload karo.');
+    return;
+  }
+  if(mode==='image'&&!movement&&!story){
+    alert('Image mein kya hona chahiye, woh bhi likho.');
+    document.getElementById('movement').focus();
+    return;
+  }
+
+  const count=Number(document.getElementById('scenes').value);
+  const duration=Number(document.getElementById('duration').value);
+  const seconds=(duration/count).toFixed(1).replace(/\.0$/,'');
+  const ratio=document.getElementById('ratio').value;
   const style=document.getElementById('style').value;
-  const language=document.getElementById('language').value;
-  const prompt=`Create an original ${style} character named "${name}". Character type: ${type}. Life stage: ${age}. Story role: ${role}. Appearance and clothing: ${look}. Personality: ${mood}. Give the character a distinctive, expressive face, coherent anatomy for its character type, detailed materials, natural cinematic lighting, clear silhouette and polished production quality. Full-body character reference, standing in a neutral pose against a simple studio background. Keep the same face, proportions, colors, clothing and identifying details in future scenes. Dialogue language requirement: ${language}. Preserve the story's meaning and use natural pronunciation; do not translate the story unless requested.`;
-  document.getElementById('prompt').value=prompt;
+  const voices=document.getElementById('voices').value.trim();
+  const consistency=document.getElementById('consistent').checked;
+
+  let plan='REALTOON AI — STORY PLAN\n';
+  plan+='Mode: '+(mode==='text'?'Text-to-Video planning':'Image-to-Video planning')+'\n';
+  plan+='Format: '+ratio+'\nTotal target duration: '+duration+' seconds\n';
+  plan+='Scenes: '+count+'\nApproximate scene duration: '+seconds+' seconds\n';
+  plan+='Visual style: '+style+'\n\n';
+  plan+='ORIGINAL STORY:\n'+(story||'(Create a story from the image movement instructions.)')+'\n\n';
+
+  if(mode==='image'){
+    plan+='STARTING IMAGE: Use the uploaded image as a visual reference in the external tool.\n';
+    plan+='MOVEMENT INSTRUCTIONS:\n'+(movement||story)+'\n\n';
+  }
+
+  plan+='GLOBAL INSTRUCTIONS:\n';
+  plan+='- Follow the language used in the original story; do not translate dialogue unless requested.\n';
+  plan+='- Infer characters naturally from the story: people, children, elderly characters, animals, vegetables, robots, fantasy or horror characters.\n';
+  plan+='- Keep the plot logical, emotional and connected between scenes.\n';
+  plan+='- Give each line of dialogue a clear speaker.\n';
+  plan+='- Use cinematic framing, clear action, expressive reactions and suitable lighting.\n';
+
+  if(consistency){
+    plan+='- CHARACTER CONSISTENCY: Keep recurring characters identical in face, body proportions, size, colors, clothing, accessories and identifying details in every scene.\n';
+    plan+='- Keep each recurring character’s voice description consistent.\n';
+  }
+  if(voices) plan+='- VOICE DIRECTIONS (planning only):\n'+voices+'\n';
+
+  plan+='\nSCENE-BY-SCENE PROMPTS:\n';
+  for(let i=1;i<=count;i++){
+    plan+='\nSCENE '+i+' — about '+seconds+' seconds\n';
+    if(i===1) plan+='Goal: Strong opening hook; establish the setting and main characters.\n';
+    else if(i===count) plan+='Goal: A satisfying ending or a strong cliffhanger, depending on the story.\n';
+    else plan+='Goal: Move the story forward with one clear action, discovery or emotional moment.\n';
+
+    plan+='Prompt: Create scene '+i+' in '+style+', '+ratio+' aspect ratio. Follow the original story and connect naturally with surrounding scenes. Show one clear main action, expressive reactions and a coherent setting. Keep all recurring character designs consistent. Use dialogue in the story’s original language and identify who speaks each line. Do not invent unrelated plot details.\n';
+  }
+
+  plan+='\nIMPORTANT: This is a text plan, not a generated video. A compatible video and voice service must be connected to render actual video and audio.';
+
+  document.getElementById('output').value=plan;
   document.getElementById('result').style.display='block';
-  document.getElementById('status').textContent='Prompt created! You can select the text and copy it.';
+  document.getElementById('status').textContent='Plan ready. No video or audio has been generated.';
   document.getElementById('result').scrollIntoView({behavior:'smooth',block:'start'});
 }
-function copyPrompt(){
-  const box=document.getElementById('prompt');
+
+function copyPlan(){
+  const box=document.getElementById('output');
   box.focus();
   box.select();
   box.setSelectionRange(0,box.value.length);
-  document.getElementById('status').textContent='Text selected. Long-press the text and tap Copy if the copy menu does not appear automatically.';
-  if(navigator.clipboard && window.isSecureContext){
-    navigator.clipboard.writeText(box.value).then(()=>{
-      document.getElementById('status').textContent='Prompt copied! You can paste it into another tool.';
-    }).catch(()=>{});
+  const status=document.getElementById('status');
+
+  if(navigator.clipboard&&window.isSecureContext){
+    navigator.clipboard.writeText(box.value)
+      .then(()=>status.textContent='Copied! Paste the plan into your chosen tool.')
+      .catch(()=>status.textContent='Text selected. Long-press and tap Copy.');
+  }else{
+    status.textContent='Text selected. Long-press and tap Copy.';
   }
 }
-function resetForm(){
-  document.getElementById('name').value='';
-  document.getElementById('role').value='';
-  document.getElementById('look').value='';
-  document.getElementById('result').style.display='none';
-  window.scrollTo({top:0,behavior:'smooth'});
+
+function downloadPlan(){
+  const text=document.getElementById('output').value;
+  if(!text){document.getElementById('status').textContent='Prepare a plan first.';return;}
+  const blob=new Blob([text],{type:'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='realtoon-story-plan.txt';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  document.getElementById('status').textContent='Download started.';
 }
 </script>
 </body>
-            </html>
-      
+  </html>
+                                              
